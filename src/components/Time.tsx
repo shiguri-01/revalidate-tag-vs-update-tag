@@ -1,22 +1,21 @@
+import { cacheTag } from "next/cache";
 import { Suspense } from "react";
 import { Clock } from "./Clock";
 import { Card, CardContent, CardFooter } from "./ui/card";
 import { CodeBlock } from "./ui/code-block";
 
-async function getTime() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/time`, {
-    cache: "force-cache", // キャッシュを有効にする
-    next: { tags: ["time"] },
-  });
-  const data = await res.json();
-  return data.time as string;
-}
+const getTime = async () => {
+  "use cache";
+  cacheTag("time");
+  return new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" });
+};
 
 const code = `
-const res = await fetch("/api/time", {
-  cache: "force-cache",
-  next: { tags: ["time"] },
-});
+const getTime = async () => {
+  "use cache";
+  cacheTag("time");
+  return new Date().toLocaleString("ja-JP"); // 実際はDBや外部APIからデータフェッチ
+};
 `;
 
 export async function FetchedTime() {
