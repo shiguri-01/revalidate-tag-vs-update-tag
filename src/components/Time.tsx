@@ -4,7 +4,7 @@ import { Card, CardContent, CardFooter } from "./ui/card";
 import { CodeBlock } from "./ui/code-block";
 
 async function getTime() {
-  const res = await fetch("http://localhost:3000/api/time", {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/time`, {
     cache: "force-cache", // キャッシュを有効にする
     next: { tags: ["time"] },
   });
