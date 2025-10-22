@@ -1,16 +1,6 @@
-import { RotateCwIcon } from "lucide-react";
 import { Suspense } from "react";
 import { Clock } from "./Clock";
-import { Button } from "./ui/button";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
+import { Card, CardContent, CardFooter } from "./ui/card";
 import { CodeBlock } from "./ui/code-block";
 
 async function getTime() {
@@ -23,7 +13,7 @@ async function getTime() {
 }
 
 const code = `
-const res = await fetch("http://localhost:3000/api/time", {
+const res = await fetch("/api/time", {
   cache: "force-cache",
   next: { tags: ["time"] },
 });
@@ -36,18 +26,16 @@ export async function FetchedTime() {
 
 export function Time() {
   return (
-    <Card className="w-full bg-inherit border-none">
-      <CardHeader>
-        <CardTitle>Fetched Time</CardTitle>
-        <CardDescription>サーバーからフェッチした時間</CardDescription>
-      </CardHeader>
-
+    <Card className="w-full bg-inherit border-none shadow-none">
       <CardContent className="grid gap-2">
-        <Suspense
-          fallback={<div className="text-4xl text-muted">Fetching time…</div>}
-        >
-          <FetchedTime />
-        </Suspense>
+        <div>
+          <p className="text-sm">Fetched time</p>
+          <Suspense
+            fallback={<div className="text-4xl text-muted">Fetching time…</div>}
+          >
+            <FetchedTime />
+          </Suspense>
+        </div>
 
         <CodeBlock language={"typescript"}>{code.trim()}</CodeBlock>
       </CardContent>
