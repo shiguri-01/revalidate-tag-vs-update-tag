@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# revalidateTag vs. updateTag
 
-## Getting Started
+A minimal Next.js (App Router) project demonstrating the difference between two cache invalidation APIs: `revalidateTag` and `updateTag`.
 
-First, run the development server:
+## How It Works
+
+This demo displays a server-rendered time that is cached. Two buttons trigger Server Actions to invalidate this cache, and you can observe the different outcomes.
+
+- **Click `revalidateTag()`**
+
+  - Marks the cache tag as stale (**stale-while-revalidate**).
+  - The first page refresh after clicking will still show the old cached time while triggering a revalidation in the background.
+  - **A second refresh is required** to see the updated time.
+  - [Documentation Reference](https://nextjs.org/docs/app/api-reference/functions/revalidateTag)
+
+- **Click `updateTag()`**
+  - Immediately invalidates and updates the cache.
+  - The UI updates instantly after the action completes, **without a manual reload**. This is ideal for "read-your-own-writes" scenarios.
+  - [Documentation Reference](https://nextjs.org/docs/app/api-reference/functions/updateTag)
+
+## Observing Server Logs
+
+The clearest way to see the caching behavior is by watching the terminal where your development server is running (`bun dev`). Clicking either button sends a `POST` request (the Server Action).
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+GET / 200 in 5.4s (compile: 4.5s, render: 884ms)  # Initial page load (caches the time)
+POST / 200 in 32ms (compile: 8ms, render: 24ms)   # POST request from a button click
+GET / 200 in 354ms (compile: 8ms, render: 346ms)  # GET request from a manual page refresh
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **`revalidateTag`**: The `POST` request marks the cache tag as stale. The next `GET` request (your first refresh) serves the stale data while starting a background refetch. A subsequent `GET` (your second refresh) will finally serve the fresh data.
+- **`updateTag`**: The `POST` request immediately revalidates the data and updates the cache. The UI then refetches and displays the new time automatically, often without a new `GET` request in the logs unless the page is manually reloaded.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## How to Run
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1.  `bun install`
+2.  `bun dev`
+3.  Open your browser and click the buttons to observe the different caching behaviors in the UI and your terminal.
 
-## Learn More
+## Key Files
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **`src/components/Time.tsx`**: Caches the timestamp data using `cache` and `cacheTag`.
+- **`src/server.ts`**: Defines the Server Actions that call `revalidateTag` and `updateTag`.
+- **`src/components/Actions.tsx`**: Renders the UI buttons that invoke the Server Actions.
