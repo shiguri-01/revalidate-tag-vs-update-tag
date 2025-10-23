@@ -1,4 +1,4 @@
-import { cacheTag } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import { Suspense } from "react";
 import { Clock } from "./Clock";
 import { Card, CardContent, CardFooter } from "./ui/card";
@@ -7,6 +7,7 @@ import { CodeBlock } from "./ui/code-block";
 const getTime = async () => {
   "use cache";
   cacheTag("time");
+  cacheLife("max");
   return new Date().toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" });
 };
 
@@ -14,6 +15,7 @@ const code = `
 const getTime = async () => {
   "use cache";
   cacheTag("time");
+  cacheLife("max");
   return new Date().toLocaleString("ja-JP"); // 実際はDBや外部APIからデータフェッチ
 };
 `;
