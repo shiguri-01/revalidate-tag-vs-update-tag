@@ -39,6 +39,6 @@ GET / 200 in 354ms (compile: 8ms, render: 346ms)  # GET request from a manual pa
 
 ## Key Files
 
-- **`src/components/Time.tsx`**: Caches the timestamp data using `cache` and `cacheTag`.
+- **`src/components/Time.tsx`**: Caches the timestamp data using `use cache` directive and `cacheTag`.
 - **`src/server.ts`**: Defines the Server Actions that call `revalidateTag` and `updateTag`.
 - **`src/components/Actions.tsx`**: Renders the UI buttons that invoke the Server Actions.
